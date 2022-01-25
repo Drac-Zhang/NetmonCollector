@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using System;
 
-namespace TraceCollector
+namespace NetmonCollectionTool
 {
     class Program
     {  
@@ -30,7 +30,7 @@ namespace TraceCollector
                     string Source = SourceCO.Value();
                     int Count = Int32.Parse(CountCO.Value() ?? "1");
                     string LogCategory = LogCategoryCO.Value() ?? "Application";
-                    string Destination = DestinationCO.Value() ?? "C:\\temp";
+                    //string Destination = DestinationCO.Value() ?? "C:\\temp";
 
                     delay = Delay;
 

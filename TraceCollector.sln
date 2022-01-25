@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32002.261
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraceCollector", "TraceCollector.csproj", "{EE0B8A4A-71D3-4C15-AA87-C3129FBAEFD9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventLogWriter", "..\EventLogWriter\EventLogWriter.csproj", "{DA5D1354-BBDB-4B83-8ABE-DE9C9670B17F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HISTraceCollector", "..\HISTraceCollector\HISTraceCollector.csproj", "{A857EFD0-DF7D-4AD1-B1BD-B784087DCA9A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetmonCollectionTool", "NetmonCollectionTool.csproj", "{EE0B8A4A-71D3-4C15-AA87-C3129FBAEFD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,14 +15,6 @@ Global
 		{EE0B8A4A-71D3-4C15-AA87-C3129FBAEFD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE0B8A4A-71D3-4C15-AA87-C3129FBAEFD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE0B8A4A-71D3-4C15-AA87-C3129FBAEFD9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DA5D1354-BBDB-4B83-8ABE-DE9C9670B17F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DA5D1354-BBDB-4B83-8ABE-DE9C9670B17F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DA5D1354-BBDB-4B83-8ABE-DE9C9670B17F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DA5D1354-BBDB-4B83-8ABE-DE9C9670B17F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A857EFD0-DF7D-4AD1-B1BD-B784087DCA9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A857EFD0-DF7D-4AD1-B1BD-B784087DCA9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A857EFD0-DF7D-4AD1-B1BD-B784087DCA9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A857EFD0-DF7D-4AD1-B1BD-B784087DCA9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

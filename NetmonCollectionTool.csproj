@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EE0B8A4A-71D3-4C15-AA87-C3129FBAEFD9}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TraceCollector</RootNamespace>
-    <AssemblyName>TraceCollector</AssemblyName>
+    <RootNamespace>NetmonCollectionTool</RootNamespace>
+    <AssemblyName>NetmonCollectionTool</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

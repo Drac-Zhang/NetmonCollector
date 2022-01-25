@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TraceCollector
+namespace NetmonCollectionTool
 {
     public static class EventLogWatcher
     {

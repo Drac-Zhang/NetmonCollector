@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TraceCollector
+namespace NetmonCollectionTool
 {
     public static class Netmon
     {
@@ -20,11 +21,16 @@ namespace TraceCollector
         public static void Start()
         {
             CancelExisingNetmon();
-            StartProcess();
+            StartProcess("C:\\temp\\netmon");
         }
 
-        private static void StartProcess()
+        private static void StartProcess(string Destination)
         {
+            if (!Directory.Exists(Destination))
+            {
+                Directory.CreateDirectory(Destination);
+            }
+
             Console.WriteLine("Starting netmon capture");
             ProcessStartInfo NetmonStartInfo = new ProcessStartInfo();
             NetmonStartInfo.FileName = "nmcap";
@@ -33,7 +39,7 @@ namespace TraceCollector
             NetmonStartInfo.RedirectStandardInput = true;
             NetmonStartInfo.UseShellExecute = false;
             NetmonStartInfo.CreateNoWindow = false;
-            NetmonStartInfo.Arguments = "/CaptureProcesses /network * /capture /file C:\\temp\\trace.chn: 100M /TerminateWhen /KeyPress c";
+            NetmonStartInfo.Arguments = $"/CaptureProcesses /network * /capture /file {Destination}\\trace.chn: 100M /TerminateWhen /KeyPress c";
 
             //Netmon Process
             NetmonProcess = new Process();
