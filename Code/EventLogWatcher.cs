@@ -42,7 +42,7 @@ namespace NetmonCollectionTool
             if (InstanceCheck && SourceCheck)
             {
                 CurrentCount++;
-                Console.WriteLine($"{CurrentCount}/{TargetCount} event(s) hit.");
+                Console.WriteLine($"\r\n{CurrentCount}/{TargetCount} event(s) hit.");
 
                 if (CurrentCount >= TargetCount)
                 {

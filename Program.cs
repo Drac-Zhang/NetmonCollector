@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using System;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace NetmonCollectionTool
 {
@@ -7,8 +9,41 @@ namespace NetmonCollectionTool
     {  
         private static int delay;
 
+        [DllImport("Kernel32")]
+        private static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
+
+        private delegate bool EventHandler(CtrlType sig);
+        static EventHandler _handler;
+
+        enum CtrlType
+        {
+            CTRL_C_EVENT = 0,
+            CTRL_BREAK_EVENT = 1,
+            CTRL_CLOSE_EVENT = 2,
+            CTRL_LOGOFF_EVENT = 5,
+            CTRL_SHUTDOWN_EVENT = 6
+        }
+
+        private static bool Handler(CtrlType sig)
+        {
+            Console.WriteLine("Waiting Network Monitor to close");
+
+            while (!Netmon.IsAlive)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine("\r\n ");
+            Environment.Exit(-1);
+
+            return true;
+        }
+
         static void Main(string[] args)
         {
+            _handler += new EventHandler(Handler);
+            SetConsoleCtrlHandler(_handler, true);
+
             CommandLineApplication app = new CommandLineApplication();
 
             app.HelpOption("-?|-h|-help");
@@ -32,17 +67,10 @@ namespace NetmonCollectionTool
                     string LogCategory = LogCategoryCO.Value() ?? "Application";
                     //string Destination = DestinationCO.Value() ?? "C:\\temp";
 
-                    delay = Delay;
-
-                    Netmon.Start();
+                    
                     EventLogWatcher.Register(LogCategory, EventID, Source, Count);
                     EventLogWatcher.OnReached += EventLog_Reached;
-
-                    Console.WriteLine("Press enter to stop manually");
-                    Console.ReadLine();
-
-                    EventLogWatcher.Unregister();
-                    Netmon.Stop(0);
+                    Netmon.Start();
 
                     return 0;
                 });
@@ -58,9 +86,17 @@ namespace NetmonCollectionTool
 
         private static void EventLog_Reached(object sender, EventArgs e)
         {
-            EventLogWatcher.Unregister();
+            try
+            {
+                EventLogWatcher.Unregister();
 
-            Netmon.Stop(delay);
+                Netmon.Stop(delay);
+                Console.WriteLine("Finished");
+            }
+            catch (Exception ex)
+            { 
+            
+            }
         }
     }
 }

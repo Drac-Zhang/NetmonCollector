@@ -16,7 +16,21 @@ namespace NetmonCollectionTool
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool GenerateConsoleCtrlEvent(uint dwCtrlEvent, uint dwProcessGroupId);
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern bool AttachConsole(uint dwProcessId);
+
         private static Process NetmonProcess;
+        public static bool IsAlive
+        {
+            get {
+                if (NetmonProcess != null)
+                {
+                    return NetmonProcess.HasExited;
+                }
+
+                return true;
+            }
+        }
 
         public static void Start()
         {
@@ -33,13 +47,13 @@ namespace NetmonCollectionTool
 
             Console.WriteLine("Starting netmon capture");
             ProcessStartInfo NetmonStartInfo = new ProcessStartInfo();
-            NetmonStartInfo.FileName = "nmcap";
-            NetmonStartInfo.RedirectStandardError = true;
-            NetmonStartInfo.RedirectStandardOutput = true;
-            NetmonStartInfo.RedirectStandardInput = true;
+            NetmonStartInfo.FileName = "cmd";
+            NetmonStartInfo.RedirectStandardError = false;
+            NetmonStartInfo.RedirectStandardOutput = false;
+            NetmonStartInfo.RedirectStandardInput = false;
             NetmonStartInfo.UseShellExecute = false;
             NetmonStartInfo.CreateNoWindow = false;
-            NetmonStartInfo.Arguments = $"/CaptureProcesses /network * /capture /file {Destination}\\trace.chn: 100M /TerminateWhen /KeyPress c";
+            NetmonStartInfo.Arguments = $"/c nmcap /CaptureProcesses /network * /capture /file {Destination}\\trace.chn: 100M /TerminateWhen /KeyPress c";
 
             //Netmon Process
             NetmonProcess = new Process();
@@ -47,6 +61,13 @@ namespace NetmonCollectionTool
             NetmonProcess.Start();
 
             Console.WriteLine("Capturing...");
+
+            NetmonProcess.WaitForExit();
+        }
+
+        private static void NetmonProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            Console.WriteLine(e.Data);
         }
 
         private static void CancelExisingNetmon()
@@ -78,10 +99,9 @@ namespace NetmonCollectionTool
             }
 
             Console.WriteLine("Stopping the netmon capture.");
+
             UInt32 CommandCtrlC = 0;
             GenerateConsoleCtrlEvent(CommandCtrlC, Convert.ToUInt32(NetmonProcess.Id));
-
-            NetmonProcess.WaitForExit();
         }
     }
 }
