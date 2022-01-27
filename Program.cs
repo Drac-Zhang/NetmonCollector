@@ -26,7 +26,7 @@ namespace NetmonCollectionTool
 
         private static bool Handler(CtrlType sig)
         {
-            Console.WriteLine("Waiting Network Monitor to close");
+            Console.WriteLine("Waiting Network Monitor to write the Backlog into trace file...");
 
             while (!Netmon.IsAlive)
             {
