@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using System;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Threading;
 
 namespace NetmonCollectionTool
@@ -8,6 +9,7 @@ namespace NetmonCollectionTool
     class Program
     {  
         private static int delay;
+        private static string SplitLine = "================================================\r\n";
 
         [DllImport("Kernel32")]
         private static extern bool SetConsoleCtrlHandler(EventHandler handler, bool add);
@@ -33,7 +35,6 @@ namespace NetmonCollectionTool
                 Thread.Sleep(10);
             }
 
-            Console.WriteLine("\r\n ");
             Environment.Exit(-1);
 
             return true;
@@ -41,6 +42,13 @@ namespace NetmonCollectionTool
 
         static void Main(string[] args)
         {
+            if (!CheckIsAdmin())
+            {
+                Console.WriteLine("Please run the CMD as administrator");
+
+                Environment.Exit(0);
+            }
+
             _handler += new EventHandler(Handler);
             SetConsoleCtrlHandler(_handler, true);
 
@@ -56,7 +64,7 @@ namespace NetmonCollectionTool
                 CommandOption SourceCO = app.Option("-es|--EventSource", "Event Source in the Event Log", CommandOptionType.SingleValue);
                 CommandOption CountCO = app.Option("-c|--EventCount", "How many events triggered to stop the capture.", CommandOptionType.SingleValue);
                 CommandOption LogCategoryCO = app.Option("-lc|--LogCategory", "The type of the Event (Application, Security, Setup, System), the default is Application.", CommandOptionType.SingleValue);
-                CommandOption DestinationCO = app.Option("-d|--Destination", "!!Not Implemented.", CommandOptionType.SingleValue);
+                CommandOption DestinationCO = app.Option("-d|--Destination", "The folder for saving the netmon trace, folder will be created if not exist. The default folder is C:/temp/netmon", CommandOptionType.SingleValue);
 
                 app.OnExecute(() =>
                 {
@@ -65,12 +73,14 @@ namespace NetmonCollectionTool
                     string Source = SourceCO.Value();
                     int Count = Int32.Parse(CountCO.Value() ?? "1");
                     string LogCategory = LogCategoryCO.Value() ?? "Application";
-                    //string Destination = DestinationCO.Value() ?? "C:\\temp";
+                    string Destination = DestinationCO.Value() ?? "C:\\temp\\netmon";
 
-                    
+                    delay = Delay;
                     EventLogWatcher.Register(LogCategory, EventID, Source, Count);
                     EventLogWatcher.OnReached += EventLog_Reached;
-                    Netmon.Start();
+                    Netmon.Start(Destination);
+
+                    Console.WriteLine($"\r\n{SplitLine}Capture finished! You can close the window.");
 
                     return 0;
                 });
@@ -84,14 +94,21 @@ namespace NetmonCollectionTool
             }
         }
 
+        private static bool CheckIsAdmin()
+        {
+            WindowsIdentity identity = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
         private static void EventLog_Reached(object sender, EventArgs e)
         {
             try
             {
+                Console.WriteLine($"Hit the preset event count, process to stop the netmon trace.");
                 EventLogWatcher.Unregister();
 
                 Netmon.Stop(delay);
-                Console.WriteLine("Finished");
             }
             catch (Exception ex)
             { 

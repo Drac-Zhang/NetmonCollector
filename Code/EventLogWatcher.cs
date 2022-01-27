@@ -16,6 +16,7 @@ namespace NetmonCollectionTool
         private static string Source;
         private static int TargetCount;
         private static int CurrentCount = 0;
+        private static string SplitLine = "================================================\r\n";
 
         public static void Register(string LogCategory, long EventID, string EventSource, int Count)
         {
@@ -23,7 +24,7 @@ namespace NetmonCollectionTool
             Source = EventSource;
             TargetCount = Count;
 
-            Console.WriteLine("Attaching to Event Log.");
+            Console.WriteLine($"{SplitLine}Attaching to Event Log.");
             eventLog = new EventLog();
             eventLog.Log = LogCategory;
 

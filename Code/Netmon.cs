@@ -20,6 +20,8 @@ namespace NetmonCollectionTool
         internal static extern bool AttachConsole(uint dwProcessId);
 
         private static Process NetmonProcess;
+        private static string SplitLine = "================================================\r\n";
+
         public static bool IsAlive
         {
             get {
@@ -32,17 +34,19 @@ namespace NetmonCollectionTool
             }
         }
 
-        public static void Start()
+        public static void Start(string Destination)
         {
             CancelExisingNetmon();
-            StartProcess("C:\\temp\\netmon");
+            StartProcess(Destination);
         }
 
         private static void StartProcess(string Destination)
         {
-            if (!Directory.Exists(Destination))
+            string TargetFolder = Destination.Replace("/", "\\").TrimEnd('\\');
+
+            if (!Directory.Exists(TargetFolder))
             {
-                Directory.CreateDirectory(Destination);
+                Directory.CreateDirectory(TargetFolder);
             }
 
             Console.WriteLine("Starting netmon capture");
@@ -53,14 +57,12 @@ namespace NetmonCollectionTool
             NetmonStartInfo.RedirectStandardInput = false;
             NetmonStartInfo.UseShellExecute = false;
             NetmonStartInfo.CreateNoWindow = false;
-            NetmonStartInfo.Arguments = $"/c nmcap /CaptureProcesses /network * /capture /file {Destination}\\trace.chn: 100M /TerminateWhen /KeyPress c";
+            NetmonStartInfo.Arguments = $"/c nmcap /CaptureProcesses /network * /capture /file {TargetFolder}\\trace.chn: 100M";
 
             //Netmon Process
             NetmonProcess = new Process();
             NetmonProcess.StartInfo = NetmonStartInfo;
             NetmonProcess.Start();
-
-            Console.WriteLine("Capturing...");
 
             NetmonProcess.WaitForExit();
         }
@@ -73,6 +75,8 @@ namespace NetmonCollectionTool
         private static void CancelExisingNetmon()
         {
             Process[] Ps = Process.GetProcessesByName("nmcap");
+
+            Console.WriteLine($"{SplitLine}Checking whether any nmcap.exe is running...");
 
             if (Ps.Length == 0)
             {
@@ -88,17 +92,19 @@ namespace NetmonCollectionTool
                     P.Kill();
                 }
             }
+
+            Console.WriteLine(SplitLine);
         }
 
         public static void Stop(int Delay)
         {
             if (Delay != 0)
             {
-                Console.WriteLine($"Hit target event count, postpone the stop as per the setting ({Delay}) seconds");
+                Console.WriteLine($"{SplitLine}\r\nHit target event count, postpone the stop as per the setting ({Delay}) seconds.\r\n\r\n{SplitLine}");
                 Thread.Sleep(Delay * 1000);
             }
 
-            Console.WriteLine("Stopping the netmon capture.");
+            Console.WriteLine($"\r\n{SplitLine}\r\nStopping the netmon capture.\r\n\r\n{SplitLine}");
 
             UInt32 CommandCtrlC = 0;
             GenerateConsoleCtrlEvent(CommandCtrlC, Convert.ToUInt32(NetmonProcess.Id));
