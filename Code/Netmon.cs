@@ -16,9 +16,6 @@ namespace NetmonCollectionTool
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool GenerateConsoleCtrlEvent(uint dwCtrlEvent, uint dwProcessGroupId);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        internal static extern bool AttachConsole(uint dwProcessId);
-
         private static Process NetmonProcess;
         private static string SplitLine = "================================================\r\n";
 
@@ -51,13 +48,13 @@ namespace NetmonCollectionTool
 
             Console.WriteLine("Starting netmon capture");
             ProcessStartInfo NetmonStartInfo = new ProcessStartInfo();
-            NetmonStartInfo.FileName = "cmd";
+            NetmonStartInfo.FileName = "nmcap";
             NetmonStartInfo.RedirectStandardError = false;
             NetmonStartInfo.RedirectStandardOutput = false;
             NetmonStartInfo.RedirectStandardInput = false;
             NetmonStartInfo.UseShellExecute = false;
             NetmonStartInfo.CreateNoWindow = false;
-            NetmonStartInfo.Arguments = $"/c nmcap /CaptureProcesses /network * /capture /file {TargetFolder}\\trace.chn: 100M";
+            NetmonStartInfo.Arguments = $"/CaptureProcesses /network * /capture /file {TargetFolder}\\trace.chn: 100M";
 
             //Netmon Process
             NetmonProcess = new Process();
@@ -65,11 +62,6 @@ namespace NetmonCollectionTool
             NetmonProcess.Start();
 
             NetmonProcess.WaitForExit();
-        }
-
-        private static void NetmonProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            Console.WriteLine(e.Data);
         }
 
         private static void CancelExisingNetmon()

@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\Base\PorcessBase.cs" />
     <Compile Include="Code\EventLogWatcher.cs" />
     <Compile Include="Code\Netmon.cs" />
     <Compile Include="Program.cs" />
